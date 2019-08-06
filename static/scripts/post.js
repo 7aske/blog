@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
     modalForm = M.Modal.init(document.querySelector('#modal-form'), {onCloseEnd: _handleFormSubmit});
     modalFormTitle.innerHTML = commentTitle;
     modalFormBody.innerHTML = commentForm;
-    voteButtons = document.querySelector(".vode-btn");
 });
 
 btnModalFormConfirm.addEventListener("click", () => {
@@ -68,8 +67,6 @@ function _handleFormSubmit() {
         const inpReaderNickname = document.querySelector("#reader-nickname");
         const inpReaderEmail = document.querySelector("#reader-email");
         const inpReaderComment = document.querySelector("#reader-comment");
-
-        console.log(inpReaderNickname, inpReaderEmail, inpReaderComment, document.querySelectorAll("input"));
 
         const author = inpReaderNickname.value;
         const email = inpReaderEmail.value;

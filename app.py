@@ -5,7 +5,7 @@ from db import init_db, _cleanup
 import atexit
 import shortuuid
 
-from flask import Flask, request, render_template, send_from_directory, Response, redirect, url_for
+from flask import Flask, request, render_template, send_from_directory, Response
 from flask_cors import CORS
 
 TIME_FMT = "%d %B, %Y %H:%M:%S"
@@ -101,10 +101,8 @@ def api_post_comment_vote(postid, commentid):
 		return "Invalid request", 405
 
 
-
 @app.route("/posts/<string:postid>", methods=["GET"])
 def routes_posts(postid):
-	print(postid)
 	p = mongo.db.posts.find_one_or_404({"id": postid})
 	if p is not None:
 		del p["_id"]

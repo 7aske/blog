@@ -1,6 +1,42 @@
-html, body, main{
+html, body {
   background-color: #eeeeee;
   overflow-x: hidden;
   height: 100vh;
   width: 100vw;
+}
+
+h1 {
+  font-size: 2.3em !important;
+}
+
+h2 {
+  font-size: 1.8em !important;
+}
+
+h3 {
+  font-size: 1.6em !important;
+}
+
+h4 {
+  font-size: 1.3em !important;
+}
+
+@media screen and (max-width: 540px) {
+  h1 {
+    font-size: 1.8em !important;
+  }
+  h2 {
+    font-size: 1.4em !important;
+  }
+  h3 {
+    font-size: 1.2em !important;
+  }
+  h4 {
+    font-size: 0.9em !important;
+  }
+  .container {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
 }
