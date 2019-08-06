@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Create{% endblock %}
+{% block head_include %}
+    <link rel="stylesheet" href="../static/stylesheets/create.css">
+{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block nav %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+    <div class="card p-4">
+        <div class="row mt-4">
+            <div class="input-field col s6">
+                <input id="input-post-title" value="Title" type="text" class="validate">
+                <label class="active" for="post_title">Title</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="input-post-category" value="Category" type="text" class="validate">
+                <label class="active" for="post_title">Category</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="input-post-description" class="materialize-textarea">Description</textarea>
+                            <label for="input-post-description">Post Description</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <textarea id="mde-anchor"></textarea>
+        <div class="card-action">
+            <button id="btn-submit-post" class="btn waves-effect waves-light mb-3" type="button" name="action">Submit
+                <i class="material-icons right">send</i>
+            </button>
+            <br>
+            <button id="btn-reset" class="btn waves-effect waves-light red" type="button" name="action">Clear
+                <i class="material-icons right">backspace</i>
+            </button>
+        </div>
+    </div>
+{% endblock %}
+{% block modal_question %}
+    {{ super() }}
+{% endblock %}
+{% block modal_info %}
+    {{ super() }}
+{% endblock %}
+{% block script_include %}
+    <script src="../static/scripts/create.js"></script>
+{% endblock %}

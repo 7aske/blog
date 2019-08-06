@@ -1,0 +1,7 @@
+db/
+static/node_modules/
+static/.idea/
+.idea/
+venv/
+__pycache__
+configs/**.*
