@@ -4,4 +4,4 @@ static/.idea/
 .idea/
 venv/
 __pycache__
-configs/**.*
+configs/admin.conf
