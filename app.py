@@ -219,6 +219,9 @@ def routes_create():
 def routes_static(p):
 	return send_from_directory("static", p[8:]), 200
 
+@app.route("/favicon.ico", methods=["GET"])
+def route_favicon():
+    return send_from_directory("static", "favicon.ico"), 200
 
 @app.route("/login", methods=["GET", "POST"])
 def routes_login():

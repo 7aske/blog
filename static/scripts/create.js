@@ -38,7 +38,7 @@ const mdEditor = new SimpleMDE({
 
 const postApiUrl = new URL(location);
 postApiUrl.pathname = "/api/v1/posts";
-postApiUrl.port = location.port;
+postApiUrl.port = location.port == 0 ? 80 : location.port;
 
 const btnSubmit = document.querySelector("#btn-submit-post");
 const btnReset = document.querySelector("#btn-reset");

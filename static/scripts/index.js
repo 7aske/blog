@@ -1,9 +1,9 @@
 const postApiUrl = new URL(location);
 postApiUrl.pathname = "/api/v1/posts";
-postApiUrl.port = location.port;
+postApiUrl.port = location.port == 0 ? 80 : location.port;
 const postsUrl = new URL(location);
 postsUrl.pathname = "/posts";
-postsUrl.port = location.port;
+postsUrl.port = location.port == 0 ? 80 : location.port;
 
 const postContainer = document.querySelector("#posts-container");
 
