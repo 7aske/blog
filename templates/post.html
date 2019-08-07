@@ -24,7 +24,14 @@
                 <div class="card-action">
                     <div class="row mb-1">
                         <div class="col s12 m8 black-text p-1">
-                            <a class="text-darken-5 orange-text mr-0">{{ post.comments|length }} comments</a>
+                                <div class="vote-indicator"><span
+                                        class="orange-text font-weight-bold">{{ post.votes }}</span></div>
+                                <a data-id="{{ post.id }}" data-delta="1" onclick="_votePostHandler(event)"
+                                   class="btn-vote white-text mr-0"><i class="material-icons">keyboard_arrow_up</i></a>
+                                <a data-id="{{ post.id }}" data-delta="-1" onclick="_votePostHandler(event)"
+                                   class="btn-vote white-text mr-0"><i
+                                        class="material-icons">keyboard_arrow_down</i></a>
+                            <a class="text-darken-5 orange-text ml-2 mr-0">{{ post.comments|length }} comments</a>
                         </div>
                         <div class="col s12 m4 white-text p-1">
                             Posted at <span

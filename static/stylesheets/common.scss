@@ -1,42 +1,55 @@
 html, body {
-  background-color: #eeeeee;
-  overflow-x: hidden;
-  height: 100vh;
-  width: 100vw;
+    background-color: #eeeeee;
+    overflow-x: hidden;
+    //height: 100vh;
+    width: 100%;
+}
+
+main {
+    min-height: 100vh;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main, body, footer {
+    background-color: #cbd3da;
 }
 
 h1 {
-  font-size: 2.3em !important;
+    font-size: 2.3em !important;
 }
 
 h2 {
-  font-size: 1.8em !important;
+    font-size: 1.8em !important;
 }
 
 h3 {
-  font-size: 1.6em !important;
+    font-size: 1.6em !important;
 }
 
 h4 {
-  font-size: 1.3em !important;
+    font-size: 1.3em !important;
 }
 
 @media screen and (max-width: 540px) {
-  h1 {
-    font-size: 1.8em !important;
-  }
-  h2 {
-    font-size: 1.4em !important;
-  }
-  h3 {
-    font-size: 1.2em !important;
-  }
-  h4 {
-    font-size: 0.9em !important;
-  }
-  .container {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    width: 100% !important;
-  }
+    h1 {
+        font-size: 1.8em !important;
+    }
+    h2 {
+        font-size: 1.4em !important;
+    }
+    h3 {
+        font-size: 1.2em !important;
+    }
+    h4 {
+        font-size: 0.9em !important;
+    }
+    .container {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+    }
 }

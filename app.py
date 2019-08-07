@@ -45,7 +45,7 @@ def api_posts():
 		return resp, 200
 
 
-@app.route("/api/v1/posts/<string:postid>", methods=["GET"])
+@app.route("/api/v1/posts/<string:postid>", methods=["GET", "POST"])
 def api_post(postid):
 	if request.method == "GET":
 		print(postid)
@@ -59,6 +59,20 @@ def api_post(postid):
 			return render_template("post.html", post=p)
 		else:
 			return None
+	elif request.method == "POST":
+		delta = request.args.get("delta")
+		if delta is not None:
+			p = mongo.db.posts.find_one_or_404({"id": postid})
+			if p is not None:
+				if "votes" in p.keys():
+					p["votes"] += int(delta)
+				else:
+					p["votes"] = int(delta)
+				mongo.db.posts.update_one({"id": postid}, {"$set": {"votes": p["votes"]}})
+				p["date_posted"] = p["date_posted"].strftime(TIME_FMT)
+				del p["comments"]
+				del p["_id"]
+				return json.dumps(p)
 
 
 @app.route("/api/v1/posts/<string:postid>/comments", methods=["GET", "POST"])
@@ -74,8 +88,13 @@ def api_post_comment(postid):
 			p["comments"].append(comment)
 			mongo.db.posts.update_one({"id": postid}, {"$set": {"comments": p["comments"]}})
 			return postid, 200
+	elif request.method == "GET":
+		p = mongo.db.posts.find_one_or_404({"id": postid})
+		if p is not None:
+			for comment in p["comments"]:
+				comment["date_posted"] = comment["date_posted"].strftime(TIME_FMT)
 
-	return postid, 200
+			return json.dumps({"comments":p["comments"]}), 200
 
 
 @app.route("/api/v1/posts/<string:postid>/comments/<string:commentid>", methods=["POST"])
@@ -134,6 +153,11 @@ def routes_admin():
 # index route
 def routes_index():
 	return render_template("index.html")
+
+
+@app.context_processor
+def inject_year():
+	return {'year': datetime.utcnow().strftime("%Y")}
 
 
 # def format_datetime(value, fmt="%x %X"):

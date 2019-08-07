@@ -2,8 +2,11 @@ const converter = new showdown.Converter();
 const postBodyMd = document.querySelector("#post-body-md");
 
 const commentApiUrl = new URL(location);
+const postApiUrl = new URL(location);
 commentApiUrl.pathname = `/api/v1/posts/${commentApiUrl.pathname.split("/posts/")[1]}/comments`;
+postApiUrl.pathname = `/api/v1/posts/${postApiUrl.pathname.split("/posts/")[1]}`;
 commentApiUrl.port = "5000";
+postApiUrl.port = "5000";
 
 const commentTitle = "Leave a comment";
 const commentForm = `<form class="col s12">
@@ -91,12 +94,9 @@ function _handleFormSubmit() {
 
 function _voteHandler(ev) {
     ev.stopPropagation();
-    console.log(ev.target.nodeName);
-    console.dir(ev.target);
     const btn = ev.target.nodeName === "I" ? ev.target.parent : ev.target;
     const id = btn.attributes["data-id"].value;
     let delta = btn.attributes["data-delta"].value;
-    console.log(delta);
     if (!btn.classList.contains("disabled")) {
         btn.classList.add("disabled");
         if (delta === "1") {
@@ -118,8 +118,42 @@ function _voteHandler(ev) {
             delta = "1";
         }
     }
-    console.log(id, delta);
-    axios.post(commentApiUrl + "/" + id + "?" + `delta=${delta}`).then(res => {
+    axios.post(commentApiUrl.protocol + "//" + commentApiUrl.host + commentApiUrl.pathname + "/" + id + "?" + `delta=${delta}`).then(res => {
+        const data = res.data;
+        console.log(data, data.votes);
+        btn.parentElement.firstElementChild.firstElementChild.innerText = data.votes;
+
+    }).catch(err => console.error(err));
+}
+
+
+function _votePostHandler(ev) {
+    ev.stopPropagation();
+    const btn = ev.target.nodeName === "I" ? ev.target.parent : ev.target;
+    const id = btn.attributes["data-id"].value;
+    let delta = btn.attributes["data-delta"].value;
+    if (!btn.classList.contains("disabled")) {
+        btn.classList.add("disabled");
+        if (delta === "1") {
+            if (btn.nextElementSibling.classList.contains("disabled")) {
+                btn.nextElementSibling.classList.remove("disabled");
+                delta = "2";
+            }
+        } else if (delta === "-1") {
+            if (btn.previousElementSibling.classList.contains("disabled")) {
+                btn.previousElementSibling.classList.remove("disabled");
+                delta = "-2";
+            }
+        }
+    } else {
+        btn.classList.remove("disabled");
+        if (delta === "1") {
+            delta = "-1";
+        } else if (delta === "-1") {
+            delta = "1";
+        }
+    }
+    axios.post(postApiUrl.protocol + "//" + postApiUrl.host + postApiUrl.pathname + "?" + `delta=${delta}`).then(res => {
         const data = res.data;
         console.log(data, data.votes);
         btn.parentElement.firstElementChild.firstElementChild.innerText = data.votes;

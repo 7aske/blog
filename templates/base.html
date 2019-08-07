@@ -16,18 +16,21 @@
         <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
-
 <body>
 {% block nav %}
-    <nav>
-        <div class="nav-wrapper orange">
-            <a href="/" class="brand-logo pl-3 grey-text text-darken-4">Nikola Tasic</a>
+    <nav id="top">
+        <div class="nav-wrapper grey darken-4">
+            <a href="/" class="brand-logo pl-3 orange-text">Blogy</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="/" class="grey-text text-darken-4">Home</a></li>
-                <li><a href="/create" class="grey-text text-darken-4">Create</a></li>
+                <li><a href="/" class="orange-text">Home</a></li>
+                <li><a href="/create" class="orange-text">Create</a></li>
             </ul>
         </div>
     </nav>
+    <ul class="sidenav grey darken-4" id="mobile-nav">
+        <li class="mt-4"><a href="/" class="orange-text">Home</a></li>
+        <li class="mt-4"><a href="/create" class="orange-text">Create</a></li>
+    </ul>
 {% endblock %}
 <main>
     <div class="container pt-3">
@@ -72,40 +75,42 @@
         </div>
     </div>
 {% endblock %}
-<script src="../static/node_modules/materialize-css/dist/js/materialize.min.js"></script>
-<script src="../static/node_modules/simplemde/dist/simplemde.min.js"></script>
-<script src="../static/node_modules/axios/dist/axios.min.js"></script>
-{% block script_include %}
-    <script src="../static/scripts/index.js"></script>
-{% endblock %}
 {% block footer %}
-    <footer class="page-footer orange mt-5">
+    <footer class="page-footer grey darken-4 mt-5">
         <div class="container">
             <div class="row">
                 <div class="col l6 s12">
-                    <h5 class="black-text">Footer Content</h5>
-                    <p class="black-text text-lighten-4">You can use rows and columns here to organize your footer
+                    <h5 class="orange-text">Footer Content</h5>
+                    <p class="orange-text">You can use rows and columns here to organize your footer
                         content.</p>
                 </div>
                 <div class="col l4 offset-l2 s12">
-                    <h5 class="black-text">Links</h5>
+                    <h5 class="orange-text">Links</h5>
                     <ul>
-                        <li><a class="black-text text-lighten-3" href="">Link 1</a></li>
-                        <li><a class="black-text text-lighten-3" href="">Link 2</a></li>
-                        <li><a class="black-text text-lighten-3" href="">Link 3</a></li>
-                        <li><a class="black-text text-lighten-3" href="">Link 4</a></li>
+                        <li><a class="orange-text" href="/">Home</a></li>
+                        <li><a class="orange-text" href="http://portfolio.7aske.com">Portfolio</a></li>
+                        <li><a class="orange-text" href="https://github.com/7aske">GitHub</a></li>
+                        <li><a class="orange-text" href="https://www.linkedin.com/in/nikola-tasi%C4%87-87b8bb115/">LinkedIn</a></li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="footer-copyright">
-            <div class="container black-text">
-                © 2014 Copyright Text
-                <a class="black-text text-lighten-4 right" href="#!">More Links</a>
+            <div class="container orange-text text-lighten-1">
+                © {{ year }} Nikola Tasic
+                <a class="orange-text text-lighten-1 right" href="#top">Back to Top</a>
             </div>
         </div>
     </footer>
 {% endblock %}
+<script src="../static/node_modules/materialize-css/dist/js/materialize.min.js"></script>
+<script src="../static/node_modules/simplemde/dist/simplemde.min.js"></script>
+<script src="../static/node_modules/axios/dist/axios.min.js"></script>
+<script src="../static/scripts/base.js"></script>
+{% block script_include %}
+    <script src="../static/scripts/index.js"></script>
+{% endblock %}
+
 </body>
 
 </html>
