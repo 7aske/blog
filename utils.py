@@ -1,7 +1,9 @@
 import socket
 import random
+import subprocess
 import sys
 import hashlib
+from os import path
 
 
 def get_random_port(range: tuple) -> int:
@@ -9,6 +11,11 @@ def get_random_port(range: tuple) -> int:
 	while not is_port_open(port):
 		port = random.randint(range[0], range[1])
 	return port
+
+
+def setup_client():
+	npm = subprocess.Popen(["npm", "-C", path.join(path.dirname(__file__), "static"), "install"], stdout=sys.stderr)
+	npm.wait()
 
 
 def is_port_open(port: int) -> bool:

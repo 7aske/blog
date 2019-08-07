@@ -10,7 +10,7 @@ import atexit
 import shortuuid
 
 from db import init_db, _cleanup
-from utils import get_hash
+from utils import get_hash, setup_client
 
 TIME_FMT = "%d %B, %Y %H:%M:%S"
 
@@ -21,6 +21,7 @@ cfparser.read("configs/admin.conf")
 ADMIN_USER = cfparser["credentials"]["user"]
 ADMIN_PASS = cfparser["credentials"]["passwd"]
 
+setup_client()
 app = Flask(__name__)
 cors = CORS(app)
 mongo = init_db(app)
