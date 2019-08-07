@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, send_from_directory, Response, make_response, redirect
 from flask_cors import CORS
 import jwt
+import configparser
 
 import pprint
 from datetime import datetime, timedelta
@@ -13,8 +14,12 @@ from utils import get_hash
 
 TIME_FMT = "%d %B, %Y %H:%M:%S"
 
-ADMIN_USER = "admin"
-ADMIN_PASS = "admin"
+cfparser = configparser.ConfigParser()
+
+cfparser.read("configs/admin.conf")
+
+ADMIN_USER = cfparser["credentials"]["user"]
+ADMIN_PASS = cfparser["credentials"]["passwd"]
 
 app = Flask(__name__)
 cors = CORS(app)
