@@ -1,6 +1,7 @@
 import socket
 import random
 import sys
+import hashlib
 
 
 def get_random_port(range: tuple) -> int:
@@ -25,3 +26,9 @@ def is_port_open(port: int) -> bool:
 	except Exception as e:
 		print(e)
 		sys.exit(1)
+
+
+def get_hash(obj):
+	m = hashlib.sha256()
+	m.update(bytes(obj, "utf8"))
+	return m.hexdigest()

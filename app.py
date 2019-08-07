@@ -4,6 +4,7 @@ import json
 from db import init_db, _cleanup
 import atexit
 import shortuuid
+from utils import get_hash
 
 from flask import Flask, request, render_template, send_from_directory, Response
 from flask_cors import CORS
@@ -28,7 +29,9 @@ def api_posts():
 			mongo.db.posts.insert(post)
 			del post["_id"]
 			post["date_posted"] = post["date_posted"].strftime(TIME_FMT)
-		return json.dumps(post), 200
+			return json.dumps(post), 201
+		else:
+			return "Bad Request", 400
 	elif request.method == "GET":
 		res = {"posts": []}
 		cursor = mongo.db.posts.find({})
@@ -43,6 +46,8 @@ def api_posts():
 		resp.headers["Content-Type"] = "application/json"
 		resp.set_data(json.dumps(res))
 		return resp, 200
+	else:
+		return "Bad Request", 400
 
 
 @app.route("/api/v1/posts/<string:postid>", methods=["GET", "POST"])
@@ -56,23 +61,48 @@ def api_post(postid):
 			for comment in p["comments"]:
 				comment["date_posted"] = comment["date_posted"].strftime(TIME_FMT)
 			pprint.pprint(p)
-			return render_template("post.html", post=p)
+			return render_template("post.html", post=p), 200
 		else:
-			return None
+			return "Not Found", 404
 	elif request.method == "POST":
 		delta = request.args.get("delta")
 		if delta is not None:
+			vote_point = int(delta)
 			p = mongo.db.posts.find_one_or_404({"id": postid})
 			if p is not None:
-				if "votes" in p.keys():
-					p["votes"] += int(delta)
+
+				h = get_hash(request.remote_addr)
+				voter = mongo.db.voters.find_one({"voter": h})
+				if not voter:
+					print(h)
+					print("not found")
+					mongo.db.voters.insert({"voter": h, "votes": []})
 				else:
-					p["votes"] = int(delta)
+					for vote in voter["votes"]:
+						if vote["id"] == postid:
+							if vote["vote"] < 0 and vote_point < 0 or vote["vote"] > 0 and vote_point > 0:
+								print("already voted")
+								return "Bad Request", 400
+							else:
+								voter["votes"].remove(vote)
+					voter["votes"].append({"id": postid, "vote": vote_point, "date_voted": str(datetime.now())})
+					mongo.db.voters.update_one({"voter": h}, {"$set": {"votes": voter["votes"]}})
+
+				if "votes" in p.keys():
+					p["votes"] += vote_point
+				else:
+					p["votes"] = vote_point
 				mongo.db.posts.update_one({"id": postid}, {"$set": {"votes": p["votes"]}})
 				p["date_posted"] = p["date_posted"].strftime(TIME_FMT)
 				del p["comments"]
 				del p["_id"]
-				return json.dumps(p)
+				return json.dumps(p), 201
+			else:
+				return "Not Found", 404
+		else:
+			return "Bad Request", 400
+	else:
+		return "Bad Request", 400
 
 
 @app.route("/api/v1/posts/<string:postid>/comments", methods=["GET", "POST"])
@@ -87,14 +117,20 @@ def api_post_comment(postid):
 			comment["votes"] = 0
 			p["comments"].append(comment)
 			mongo.db.posts.update_one({"id": postid}, {"$set": {"comments": p["comments"]}})
-			return postid, 200
+			return postid, 201
+		else:
+			return "Not Found", 404
 	elif request.method == "GET":
 		p = mongo.db.posts.find_one_or_404({"id": postid})
 		if p is not None:
 			for comment in p["comments"]:
 				comment["date_posted"] = comment["date_posted"].strftime(TIME_FMT)
 
-			return json.dumps({"comments":p["comments"]}), 200
+			return json.dumps({"comments": p["comments"]}), 200
+		else:
+			return "Not Found", 404
+	else:
+		return "Bad Request", 400
 
 
 @app.route("/api/v1/posts/<string:postid>/comments/<string:commentid>", methods=["POST"])
@@ -102,22 +138,38 @@ def api_post_comment_vote(postid, commentid):
 	delta = request.args.get("delta")
 	if delta is not None:
 		p = mongo.db.posts.find_one_or_404({"id": postid})
-
 		if p is not None:
-			pprint.pprint(p["comments"])
-			print(delta)
+			vote_point = int(delta)
 			for comment in p["comments"]:
 				if comment["id"] == commentid:
-					if "votes" in comment.keys():
-						comment["votes"] += int(delta)
+					h = get_hash(request.remote_addr)
+					voter = mongo.db.voters.find_one({"voter": h})
+					if not voter:
+						mongo.db.voters.insert({"voter": h, "votes": []})
 					else:
-						comment["votes"] = int(delta)
+						for vote in voter["votes"]:
+							if vote["id"] == commentid:
+								if vote["vote"] < 0 and vote_point < 0 or vote["vote"] > 0 and vote_point > 0:
+									print("already voted")
+									return "Bad Request", 400
+								else:
+									voter["votes"].remove(vote)
+						voter["votes"].append({"id": commentid, "vote": vote_point, "date_voted": str(datetime.now())})
+						mongo.db.voters.update_one({"voter": h}, {"$set": {"votes": voter["votes"]}})
+					if "votes" in comment.keys():
+						comment["votes"] += vote_point
+					else:
+						comment["votes"] = vote_point
 					pprint.pprint(p["comments"])
 					mongo.db.posts.update_one({"id": postid}, {"$set": {"comments": p["comments"]}})
 					comment["date_posted"] = comment["date_posted"].strftime(TIME_FMT)
-					return json.dumps(comment)
+					return json.dumps(comment), 201
+				else:
+					return "Not Found", 404
+		else:
+			return "Not Found", 404
 	else:
-		return "Invalid request", 405
+		return "Bad Request", 400
 
 
 @app.route("/posts/<string:postid>", methods=["GET"])
@@ -129,30 +181,31 @@ def routes_posts(postid):
 		for c in p["comments"]:
 			c["date_posted"] = c["date_posted"].strftime(TIME_FMT)
 		pprint.pprint(p)
-		return render_template("post.html", post=p)
+		return render_template("post.html", post=p), 200
 	else:
-		return None
+		return "Not Found", 404
 
 
 @app.route("/create", methods=["GET"])
 def routes_create():
-	return render_template("create.html")
+	return render_template("create.html"), 200
 
 
 @app.route("/static/<path:p>", methods=["GET"])
 def routes_static(p):
-	return send_from_directory("static", p[8:])
+	return send_from_directory("static", p[8:]), 200
 
 
 @app.route("/me/admin", methods=["GET"])
 def routes_admin():
-	return "ADMIN"
+	return "ADMIN", 200
 
 
 @app.route("/")
 # index route
 def routes_index():
-	return render_template("index.html")
+	print(request.remote_addr)
+	return render_template("index.html"), 200
 
 
 @app.context_processor
@@ -160,13 +213,17 @@ def inject_year():
 	return {'year': datetime.utcnow().strftime("%Y")}
 
 
-# def format_datetime(value, fmt="%x %X"):
-# 	print(value)
-# 	if value is None:
-# 		return ""
-# 	return datetime.strptime(value, "").strftime(fmt)
-#
-# app.jinja_env.filters['formatdatetime'] = format_datetime
+@app.errorhandler(404)
+def page_not_found(e):
+	print(e)
+	return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+	print(e)
+	return render_template('500.html'), 500
+
 
 @app.after_request
 def add_header(r):
