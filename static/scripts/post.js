@@ -5,8 +5,8 @@ const commentApiUrl = new URL(location);
 const postApiUrl = new URL(location);
 commentApiUrl.pathname = `/api/v1/posts/${commentApiUrl.pathname.split("/posts/")[1]}/comments`;
 postApiUrl.pathname = `/api/v1/posts/${postApiUrl.pathname.split("/posts/")[1]}`;
-commentApiUrl.port = "5000";
-postApiUrl.port = "5000";
+commentApiUrl.port = location.port;
+postApiUrl.port = location.port;
 
 const commentTitle = "Leave a comment";
 const commentForm = `<form class="col s12">
