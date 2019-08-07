@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <ul class="collection">
+        {% for error in errors %}
+            <li class="collection-item red lighten-2">{{ error }}</li>
+        {% endfor %}
+    </ul>
+    <div class="row">
+        <div class="col m2 s12"></div>
+        <div class="col m8 s12 center">
+            <div class="card white darken-1">
+                <div class="card-content black-text">
+                    <span class="card-title">Login</span>
+                    <div class="row">
+                        <form method="POST" action="/login">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <i class="material-icons prefix">account_circle</i>
+                                    <input id="username" name="admin_username" type="text" class="validate">
+                                    <label for="username">Username</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <i class="material-icons prefix">lock</i>
+                                    <input id="password" name="admin_passwd" type="password" class="validate">
+                                    <label for="password">Password</label>
+                                </div>
+                            </div>
+                            <button class="btn waves-effect waves-light pb-1" type="submit">Submit <i class="material-icons">send</i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col m2 s12"></div>
+    </div>
+{% endblock %}

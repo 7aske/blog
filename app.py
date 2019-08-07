@@ -1,15 +1,20 @@
+from flask import Flask, request, render_template, send_from_directory, Response, make_response, redirect
+from flask_cors import CORS
+import jwt
+
 import pprint
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
-from db import init_db, _cleanup
 import atexit
 import shortuuid
+
+from db import init_db, _cleanup
 from utils import get_hash
 
-from flask import Flask, request, render_template, send_from_directory, Response
-from flask_cors import CORS
-
 TIME_FMT = "%d %B, %Y %H:%M:%S"
+
+ADMIN_USER = "admin"
+ADMIN_PASS = "admin"
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -188,7 +193,20 @@ def routes_posts(postid):
 
 @app.route("/create", methods=["GET"])
 def routes_create():
-	return render_template("create.html"), 200
+	cookie = request.cookies.get("authorization", None)
+	if cookie:
+		parts = cookie.split(" ")
+		if len(parts) == 2:
+			if parts[0] == "Bearer":
+				try:
+					token = jwt.decode(parts[1], "secret",
+					                     algorithm="HS256")
+					print(token)
+					return render_template("create.html"), 200
+				except (jwt.DecodeError, jwt.ExpiredSignatureError):
+					return redirect("/login")
+
+	return redirect("/login")
 
 
 @app.route("/static/<path:p>", methods=["GET"])
@@ -196,9 +214,39 @@ def routes_static(p):
 	return send_from_directory("static", p[8:]), 200
 
 
-@app.route("/me/admin", methods=["GET"])
-def routes_admin():
-	return "ADMIN", 200
+@app.route("/login", methods=["GET", "POST"])
+def routes_login():
+	if request.method == "POST":
+		username = request.form.get('admin_username')
+		password = request.form.get('admin_passwd')
+		print(username, password)
+
+		if username != ADMIN_USER or get_hash(ADMIN_PASS) != get_hash(password):
+			return render_template("login.html", errors=["Bad Credentials"])
+
+		token = jwt.encode({'issuedAt': str(datetime.now()), "expiresAt": str(datetime.now() + timedelta(hours=3))},
+		                   'secret', algorithm='HS256')
+		print(token)
+		resp = make_response(redirect("/create"))
+		resp.set_cookie("authorization", "Bearer " + str(token, encoding="utf8"))
+		return resp
+	elif request.method == "GET":
+		header = request.headers.get("authrorization", None)
+		if header:
+			parts = header.split(" ")
+			if len(parts) == 2:
+				if parts[0] == "Bearer":
+					try:
+						token = jwt.decode(parts[1], "secret",
+						                     algorithm="HS256")
+						print(token)
+						return redirect("/create")
+					except (jwt.DecodeError, jwt.ExpiredSignatureError):
+						return render_template("login.html"), 400
+
+		return render_template("login.html"), 200
+	else:
+		return "Bad Request", 400
 
 
 @app.route("/")

@@ -5,7 +5,6 @@ import hashlib
 
 
 def get_random_port(range: tuple) -> int:
-	return 27017
 	port = random.randint(range[0], range[1])
 	while not is_port_open(port):
 		port = random.randint(range[0], range[1])
