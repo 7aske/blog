@@ -13,27 +13,27 @@
     <div class="row mb-0">
         <div class="col s12 m12" id="post" data-id="{{ post.id }}">
             <div class="card grey darken-4 mb-1">
-                <div class="card-content black-text pt-1">
-                <span class="card-title">
-                    <h2 class="text-white">
+                <div class="card-content white-text pt-1">
+                <span class="card-title" style="border-bottom: 2px solid orange;">
+                    <h2 class="white-text">
                         {{ post.title }}
                     </h2>
                 </span>
-                    <p id="post-body-md" class="text-white">{{ post.body }}</p>
+                    <p id="post-body-md" class="">{{ post.body }}</p>
                 </div>
-                <div class="card-action">
+                <div class="card-action pb-1 pt-2 pr-4">
                     <div class="row mb-1">
-                        <div class="col s12 m8 black-text p-1">
-                                <div class="vote-indicator"><span
-                                        class="orange-text font-weight-bold">{{ post.votes }}</span></div>
-                                <a data-id="{{ post.id }}" data-delta="1" onclick="_votePostHandler(event)"
-                                   class="btn-vote white-text mr-0"><i class="material-icons">keyboard_arrow_up</i></a>
-                                <a data-id="{{ post.id }}" data-delta="-1" onclick="_votePostHandler(event)"
-                                   class="btn-vote white-text mr-0"><i
-                                        class="material-icons">keyboard_arrow_down</i></a>
-                            <a class="text-darken-5 orange-text ml-2 mr-0">{{ post.comments|length }} comments</a>
+                        <div class="col s12 m6 black-text p-1">
+                            <div class="vote-indicator"><span
+                                    class="orange-text font-weight-bold">{{ post.votes }}</span></div>
+                            <a data-id="{{ post.id }}" data-delta="1" onclick="_votePostHandler(event)"
+                               class="btn-vote white-text mr-0"><i class="material-icons">keyboard_arrow_up</i></a>
+                            <a data-id="{{ post.id }}" data-delta="-1" onclick="_votePostHandler(event)"
+                               class="btn-vote white-text mr-0"><i
+                                    class="material-icons">keyboard_arrow_down</i></a>
+                            <div style="display:inline-block;position:relative;top: -5px;" class="text-darken-5 orange-text ml-2 mr-0">{{ post.comments|length }} comments</div>
                         </div>
-                        <div class="col s12 m4 white-text p-1">
+                        <div class="col s12 m6 white-text right-align date-posted-container p-1 pr-0">
                             Posted at <span
                                 class="text-darken-5 orange-text">{{ post.date_posted }}</span>
                         </div>
@@ -50,22 +50,25 @@
             <div class="row mb-0" id="comment-{{ comment.id }}" data-id="{{ comment.id }}">
                 <div class="col s12 m12">
                     <div class="card grey darken-4 mb-1">
-                        <div class="card-content white-text pr-4 pt-1 pb-0">
+                        <div class="card-content white-text pr-4 pl-3 pt-2 pb-0">
                             <span class="card-title mt-1"><h6>{{ comment.author }}</h6></span>
                         </div>
                         <div class="pr-4 pl-4 pb-2">
                             <p class="mb-2 white-text"
                                style="word-wrap: break-spaces; text-align: justify;">{{ comment.text }}</p>
                         </div>
-                        <div class="card-action pt-1 pb-2">
+                        <div class="card-action pr-3 pl-2 pt-1 pb-0">
                             <div class="row mb-0">
-                                <div class="col m8 s12">
+                                <div class="col m6 s12">
                                     <div class="vote-indicator"><span
                                             class="orange-text font-weight-bold">{{ comment.votes }}</span></div>
-                                    <a data-id="{{ comment.id }}" data-delta="1" onclick="_voteHandler(event)" class="btn-vote white-text mr-0"><i class="material-icons">keyboard_arrow_up</i></a>
-                                    <a data-id="{{ comment.id }}" data-delta="-1" onclick="_voteHandler(event)" class="btn-vote white-text mr-0"><i class="material-icons">keyboard_arrow_down</i></a>
+                                    <a data-id="{{ comment.id }}" data-delta="1" onclick="_voteHandler(event)"
+                                       class="btn-vote white-text mr-0"><i class="material-icons">keyboard_arrow_up</i></a>
+                                    <a data-id="{{ comment.id }}" data-delta="-1" onclick="_voteHandler(event)"
+                                       class="btn-vote white-text mr-0"><i
+                                            class="material-icons">keyboard_arrow_down</i></a>
                                 </div>
-                                <div class="col m4 s12">
+                                <div class="col m6 s12 right-align date-posted-container pb-1">
                                     <small class="grey-text">Posted at <span
                                             class="orange-text">{{ comment.date_posted }}</span></small>
                                 </div>

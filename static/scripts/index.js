@@ -39,12 +39,12 @@ function postTemplate(post) {
                 </div>
                 <div class="card-action white-text">
                     <div class="row mb-1">
-                        <div class="col s12 m8 black-text p-1">
+                        <div class="col s12 m6 black-text p-1">
                             <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-2">Read More</a>
                             <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-2">${ post.comments.length } comments</a>
                             <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-0">${ post.votes } votes</a>
                         </div>
-                        <div class="col s12 m4 grey-text p-1">
+                        <div class="col s12 m6 grey-text right-align date-posted-container p-1">
                             Posted at <span class="orange-text">${post.date_posted}</span>
                         </div>
                     </div>
