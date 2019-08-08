@@ -27,7 +27,7 @@ def validate_request(request) -> (bool, dict):
 
 def generate_token() -> bytes:
 	now = time.time()
-	exp = now + timeconv(seconds=10)
+	exp = now + timeconv(hours=3)
 	print(now, exp)
 	payload = {'iat': int(now), "exp": int(exp)}
 	return jwt.encode(payload, config["admin"]["secret"], algorithm='HS256')
