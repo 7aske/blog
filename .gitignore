@@ -5,3 +5,4 @@ static/.idea/
 venv/
 __pycache__
 configs/admin.conf
+.vscode/

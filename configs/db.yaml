@@ -1,7 +1,12 @@
+systemLog:
+  destination: file
+  path: "db/mongod.log"
+  logAppend: false
 storage:
   journal:
     enabled: true
+
 net:
   bindIp: 127.0.0.1
 setParameter:
-  enableLocalhostAuthBypass: true
+  enableLocalhostAuthBypass: false
