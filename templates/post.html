@@ -12,16 +12,16 @@
 {% block content %}
     <div class="row mb-0">
         <div class="col s12 m12" id="post" data-id="{{ post.id }}">
-            <div class="card grey darken-4 mb-1">
-                <div class="card-content white-text pt-1">
+            <div class="card grey lighten-5 mb-1">
+                <div class="card-content pt-1">
                 <span class="card-title" style="border-bottom: 2px solid orange;">
-                    <h2 class="white-text">
+                    <h2>
                         {{ post.title }}
                     </h2>
                 </span>
-                    <p id="post-body-md" class="">{{ post.body }}</p>
+                    <p id="post-body-md">{{ post.body }}</p>
                 </div>
-                <div class="card-action pb-1 pt-2 pr-4">
+                <div class="card-action grey darken-4 pb-1 pt-2 pr-4">
                     <div class="row mb-1">
                         <div class="col s12 m6 black-text p-1">
                             <div class="vote-indicator"><span
@@ -43,10 +43,10 @@
         </div>
     </div>
     <div class="right-align p-2">
-        <button class="btn modal-trigger mr-1 orange" data-target="modal-form">Comment</button>
+        <button class="btn modal-trigger mr-1 orange black-text" data-target="modal-form">Comment</button>
     </div>
     <div id="comments-container">
-        {% for comment in post.comments %}
+        {% for comment in post.comments|reverse %}
             <div class="row mb-0" id="comment-{{ comment.id }}" data-id="{{ comment.id }}">
                 <div class="col s12 m12">
                     <div class="card grey darken-4 mb-1">
@@ -84,6 +84,6 @@
     {{ super() }}
 {% endblock %}
 {% block script_include %}
-    <script src="../static/node_modules/showdown/dist/showdown.min.js"></script>
+    <script src="../static/node_modules/marked/marked.min.js"></script>
     <script src="../static/scripts/post.js"></script>
 {% endblock %}

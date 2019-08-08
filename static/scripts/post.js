@@ -45,7 +45,7 @@ function commentTemplate(comment) {
 
 
 window.onload = () => {
-    postBodyMd.innerHTML = converter.makeHtml(postBodyMd.innerHTML);
+    postBodyMd.innerHTML = marked(postBodyMd.innerHTML);
 };
 
 const btnModalFormConfirm = document.querySelector("#btn-modal-form-confirm");

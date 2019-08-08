@@ -6,20 +6,43 @@ postsUrl.pathname = "/posts";
 postsUrl.port = location.port == 0 ? 80 : location.port;
 
 const postContainer = document.querySelector("#posts-container");
+const footer = document.querySelector("footer");
 
-
+let startIndex = 0;
+let postCount = 5;
+let fetch = true;
+let done = false;
 
 window.onload = ev => {
-    axios.get(postApiUrl.href).then(res => {
+    fetchPosts();
+};
+
+document.addEventListener("scroll", ev => {
+    const footerPos = footer.offsetTop;
+    const scrollPos = window.pageYOffset + window.innerHeight;
+
+    if (scrollPos > footerPos && fetch === true && !done){
+        fetchPosts();
+    }
+    console.log(footerPos);
+    console.log(scrollPos)
+});
+
+function fetchPosts() {
+    fetch = false;
+    axios.get(postApiUrl.href + `?count=${postCount}&start=${startIndex}`).then(res => {
         const data = res.data;
-        
-        postContainer.innerHTML = "";
+        if (data.posts.length === 0) {
+            done = true;
+            return;
+        }
         data.posts.forEach(post => {
             postContainer.innerHTML += postTemplate(post);
         });
+        startIndex += postCount;
+        fetch = true;
     }).catch(err => console.error(err))
 }
-
 
 function postTemplate(post) {
     return `
@@ -41,8 +64,8 @@ function postTemplate(post) {
                     <div class="row mb-1">
                         <div class="col s12 m6 black-text p-1">
                             <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-2">Read More</a>
-                            <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-2">${ post.comments.length } comments</a>
-                            <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-0">${ post.votes } votes</a>
+                            <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-2">${post.comments.length} comments</a>
+                            <a href="${postsUrl.href + "/" + post.id}" class="right-align mr-0">${post.votes} votes</a>
                         </div>
                         <div class="col s12 m6 grey-text right-align date-posted-container p-1">
                             Posted at <span class="orange-text">${post.date_posted}</span>

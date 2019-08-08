@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 import pprint
 from flask import Blueprint, request, Response, render_template
+import flask_pymongo
 
 import auth
 import utils
@@ -25,8 +26,11 @@ def api_posts():
 
 		return "Bad Request", 400
 	elif request.method == "GET":
+		start = int(request.args.get("start", default=0))
+		count = int(request.args.get("count", default=5))
+		print(start, count)
 		res = {"posts": []}
-		cursor = get_db().db.posts.find({})
+		cursor = get_db().db.posts.find({}).sort([("_id", flask_pymongo.DESCENDING)]).limit(count - start).skip(start)
 		for post in cursor:
 			p = postutils.post_to_json(post)
 			res["posts"].append(p)

@@ -14,26 +14,29 @@
   display: inline-block;
   cursor: pointer;
 }
+
 .btn-vote i {
   pointer-events: none;
 }
+
 .btn-vote:hover {
-  filter: invert(1);
+  -webkit-filter: invert(1);
+          filter: invert(1);
 }
+
 .btn-vote.disabled {
   background-color: #ffab40;
   color: #ffab40;
 }
+
 @media screen and (max-width: 540px) {
   .date-posted-container {
     text-align: left;
   }
-
   .card-content {
     padding-left: 1.5rem !important;
     padding-right: 1.5rem !important;
   }
-
   .card-action {
     padding-left: 1.5rem !important;
     padding-right: 1.5rem !important;
