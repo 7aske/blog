@@ -53,7 +53,7 @@ def _start_mongod():
 
 	if not path.exists(DB_PATH):
 		mkdir(DB_PATH)
-		_init_root_user(DB_NAME, DB_USER, DB_PASS, DB_PORT)
+		_init_root_user(DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_NAME)
 	proc = subprocess.Popen(
 		["mongod", "--auth", f"--dbpath={DB_PATH}", f"--config={DB_CONF_PATH}", f"--port={DB_PORT}"],
 		stdout=sys.stderr)
@@ -65,10 +65,10 @@ def _start_mongod():
 	return proc
 
 
-def _init_root_user(database: str, username: str, password: str, port: int):
+def _init_root_user(database: str, username: str, password: str, port: int, dbname: str):
 	# 'sleep(1)' is there to ensure that the previous command has been executed
 	swtich_db_cmd = f"use {database}\n"
-	create_user_cmd = "db.createUser({user: \"%s\", pwd: \"%s\", roles: [\"root\"]})\n" % (username, password)
+	create_user_cmd = "db.createUser({user: \"%s\", pwd: \"%s\", roles: [{role: \"root\", db: \"%s\"}]})\n" % (username, password, dbname)
 	collection = "posts"
 	create_collection_cmd = "db.createCollection(\"%s\")\n" % collection
 	# start mongod without '--auth' flag
