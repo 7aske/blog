@@ -21,7 +21,7 @@ def api_posts():
 			post = postutils.request_to_post(request)
 			if post is not None:
 				get_db().db.posts.insert(post)
-				return postutils.post_to_json(json.dumps(post)), 201
+				return json.dumps(postutils.post_to_json(post)), 201
 
 		return "Bad Request", 400
 	elif request.method == "GET":
