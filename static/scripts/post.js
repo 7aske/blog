@@ -1,4 +1,3 @@
-const converter = new showdown.Converter();
 const postBodyMd = document.querySelector("#post-body-md");
 
 const commentApiUrl = new URL(location);
