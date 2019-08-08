@@ -29,6 +29,7 @@ def request_to_post(request: flask.Request):
 			"body"       : post_json["body"],
 			"title"      : post_json["title"],
 			"category"   : post_json["category"],
+			"description": post_json["description"],
 			"date_posted": datetime.now(),
 			"id"         : shortuuid.uuid(),
 			"votes"      : 0,
