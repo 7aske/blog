@@ -55,11 +55,12 @@ def api_post(postid):
 	elif request.method == "POST":
 		delta = request.args.get("delta")
 		print(delta)
+		addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
 		if delta is not None:
 			vote_point = int(delta)
 			post = get_db().db.posts.find_one_or_404({"id": postid})
 
-			addr_hash = utils.get_hash(request.remote_addr)
+			addr_hash = utils.get_hash(addr)
 			voter = get_db().db.voters.find_one({"voter": addr_hash})
 			if not voter:
 				voter = {"voter": addr_hash, "votes": [
@@ -104,6 +105,7 @@ def api_post_comment(postid):
 @api_route.route("/api/v1/posts/<string:postid>/comments/<string:commentid>", methods=["POST"])
 def api_post_comment_vote(postid, commentid):
 	delta = request.args.get("delta")
+	addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
 	print(delta)
 	if delta is not None:
 		post = get_db().db.posts.find_one_or_404({"id": postid})
@@ -112,7 +114,7 @@ def api_post_comment_vote(postid, commentid):
 		for comment in post["comments"]:
 			print(comment["id"], commentid)
 			if comment["id"] == commentid:
-				addr_hash = utils.get_hash(request.remote_addr)
+				addr_hash = utils.get_hash(addr)
 				voter = get_db().db.voters.find_one({"voter": addr_hash})
 				if not voter:
 					voter = {"voter": addr_hash, "votes": [
