@@ -28,7 +28,6 @@ def api_posts():
 	elif request.method == "GET":
 		start = int(request.args.get("start", default=0))
 		count = int(request.args.get("count", default=5))
-		print(start, count)
 		res = {"posts": []}
 		cursor = get_db().db.posts.find({}).sort([("_id", flask_pymongo.DESCENDING)]).limit(count - start).skip(start)
 		for post in cursor:
@@ -42,7 +41,7 @@ def api_posts():
 		return "Bad Request", 400
 
 
-@api_route.route("/api/v1/posts/<string:postid>", methods=["GET", "POST"])
+@api_route.route("/api/v1/posts/<string:postid>", methods=["GET", "POST", "PUT", "DELETE"])
 def api_post(postid):
 	if request.method == "GET":
 		post = get_db().db.posts.find_one_or_404({"id": postid})
@@ -54,12 +53,10 @@ def api_post(postid):
 			return "Not Found", 404
 	elif request.method == "POST":
 		delta = request.args.get("delta")
-		print(delta)
 		addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
 		if delta is not None:
 			vote_point = int(delta)
 			post = get_db().db.posts.find_one_or_404({"id": postid})
-
 			addr_hash = utils.get_hash(addr)
 			voter = get_db().db.voters.find_one({"voter": addr_hash})
 			if not voter:
@@ -77,8 +74,23 @@ def api_post(postid):
 			return json.dumps(ret), 201
 		else:
 			return "Bad Request", 400
-	else:
-		return "Bad Request", 400
+	elif request.method == "PUT":
+		if auth.validate_request(request):
+			updated_post = postutils.request_to_post(request)
+			post = get_db().db.posts.find_one_or_404({"id": postid})
+			if post is not None:
+				get_db().db.posts.update_one({"id": post["id"]}, {
+					"$set": {"body"    : updated_post["body"], "description": updated_post["description"],
+					         "category": updated_post["category"], "title": updated_post["title"]}})
+				return json.dumps(updated_post), 201
+	elif request.method == "DELETE":
+		if auth.validate_request(request):
+			deleted = get_db().db.posts.delete_one({"id": postid})
+			if deleted.deleted_count > 0:
+				return json.dumps({"deleted": deleted.deleted_count}), 200
+			else:
+				return "Not Found", 404
+	return "Bad Request", 400
 
 
 @api_route.route("/api/v1/posts/<string:postid>/comments", methods=["GET", "POST"])
