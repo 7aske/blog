@@ -10,7 +10,8 @@ TIME_FMT = config.get("DEFAULT", "TIME_FORMAT", fallback="%d %B, %Y %H:%M:%S")
 
 
 def post_to_json(post):
-	del post["_id"]
+	if "_id" in post.keys():
+		del post["_id"]
 	post["date_posted"] = post["date_posted"].strftime(TIME_FMT)
 	for comment in post["comments"]:
 		comment["date_posted"] = comment["date_posted"].strftime(TIME_FMT)

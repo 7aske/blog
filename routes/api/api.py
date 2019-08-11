@@ -82,7 +82,7 @@ def api_post(postid):
 				get_db().db.posts.update_one({"id": post["id"]}, {
 					"$set": {"body"    : updated_post["body"], "description": updated_post["description"],
 					         "category": updated_post["category"], "title": updated_post["title"]}})
-				return json.dumps(updated_post), 201
+				return json.dumps(postutils.post_to_json(updated_post)), 201
 	elif request.method == "DELETE":
 		if auth.validate_request(request):
 			deleted = get_db().db.posts.delete_one({"id": postid})
