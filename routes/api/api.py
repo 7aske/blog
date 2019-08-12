@@ -100,6 +100,8 @@ def api_post_comment(postid):
 		if comment is not None:
 			post = get_db().db.posts.find_one_or_404({"id": postid})
 			post["comments"].append(comment)
+			if "mailer" in config.sections():
+				commentutils.mail_commenters(post, comment)
 			get_db().db.posts.update_one({"id": postid}, {"$set": {"comments": post["comments"]}})
 			return json.dumps(commentutils.comment_to_json(comment)), 201
 		else:

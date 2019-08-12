@@ -6,12 +6,12 @@ from os import path, getenv
 from config import config
 
 
-def get_random_port(range: tuple) -> int:
+def get_random_port(prange: tuple) -> int:
 	if getenv("FLASK_ENV", None) == "development":
 		return 27017
-	port = random.randint(range[0], range[1])
+	port = random.randint(prange[0], prange[1])
 	while not is_port_open(port):
-		port = random.randint(range[0], range[1])
+		port = random.randint(prange[0], prange[1])
 	return port
 
 
