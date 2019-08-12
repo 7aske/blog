@@ -1,7 +1,6 @@
 from datetime import datetime
 import json
-import pprint
-from flask import Blueprint, request, Response, render_template
+from flask import Blueprint, request, Response
 import flask_pymongo
 
 import auth
@@ -47,10 +46,8 @@ def api_post(postid):
 		post = get_db().db.posts.find_one_or_404({"id": postid})
 		if post is not None:
 			post = postutils.post_to_json(post)
-			addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
-			voter = get_db().db.voters.find_one({"voter": utils.get_hash(addr)})
 			res = Response()
-			res.set_data(json.dumps({"voter": voter, "post": post}, default=lambda o: str(o)))
+			res.set_data(json.dumps({"post": post}, default=lambda o: str(o)))
 			return res, 200
 		else:
 			return "Not Found", 404
@@ -151,3 +148,20 @@ def api_post_comment_vote(postid, commentid):
 			return "Not Found", 404
 	else:
 		return "Bad Request", 400
+
+
+@api_route.route("/api/v1/voters/<string:oid>", methods=["GET"])
+def api_get_voters(oid):
+	if request.method == "GET":
+		addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
+		voter = get_db().db.voters.find_one({"voter": utils.get_hash(addr)})
+		post = get_db().db.posts.find_one({"id": oid})
+		if voter:
+			voter["votes"] = [vote for vote in voter["votes"] if vote["id"] == oid or vote["id"] in [comment["id"] for
+			                                                                                         comment in
+			                                                                                         post["comments"]]]
+			res = Response()
+			res.set_data(json.dumps({"voter": voter}, default=lambda o: str(o)))
+			return res, 200
+
+	return "Not Found", 404
