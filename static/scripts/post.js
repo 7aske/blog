@@ -23,6 +23,7 @@ const commentForm = `<form class="col s12">
                     </div>
                     <div class="row">
                         <div class="input-field col s12 pl-3 pr-2">
+                            <i class="material-icons prefix">short_text</i>
                             <textarea id="reader-comment" class="materialize-textarea"></textarea>
                             <label for="reader-comment">Comment</label>
                         </div>

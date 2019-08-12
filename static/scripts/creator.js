@@ -1,5 +1,4 @@
 const mdEditor = new SimpleMDE({
-    autofocus: true,
     autosave: {
         enabled: false,
     },
@@ -36,7 +35,6 @@ const mdEditor = new SimpleMDE({
 });
 
 const mdEditorEdit = new SimpleMDE({
-    autofocus: true,
     autosave: {
         enabled: false,
     },
@@ -204,7 +202,7 @@ function _editPost(ev) {
     const post = postsState.find(p => p.id === id);
     inpPostTitleEdit.value = post.title;
     inpPostCategoryEdit.value = post.category;
-    inpPostDescriptionEdit.innerText = post.description;
+    inpPostDescriptionEdit.value = post.description;
     mdEditorEdit.value(post.body);
     currentPost = post;
 }

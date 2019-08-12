@@ -33,6 +33,33 @@ h4 {
     font-size: 1.3em !important;
 }
 
+.input-field input[type=text]:focus + label, .input-field input[type=email]:focus + label {
+    color: #ff9800 !important;
+}
+
+.input-field input[type=text]:focus, .input-field input[type=email]:focus {
+    border-bottom: 1px solid #ff9800 !important;
+    box-shadow: 0 1px 0 0 #ff9800 !important;
+}
+
+.materialize-textarea:focus {
+    border-bottom: 1px solid #ff9800 !important;
+    box-shadow: 0 1px 0 0 #ff9800 !important;
+}
+
+.materialize-textarea:focus + label {
+    color: #ff9800 !important;
+}
+
+.materialize-textarea .prefix.active {
+    color: #ff9800;
+}
+.input-field .prefix.active {
+    color: #ff9800;
+}
+
+
+
 @media screen and (max-width: 540px) {
     h1 {
         font-size: 1.8em !important;
