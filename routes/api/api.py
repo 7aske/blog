@@ -47,8 +47,11 @@ def api_post(postid):
 		post = get_db().db.posts.find_one_or_404({"id": postid})
 		if post is not None:
 			post = postutils.post_to_json(post)
-			pprint.pprint(post)
-			return render_template("post.html", post=post), 200
+			addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
+			voter = get_db().db.voters.find_one({"voter": utils.get_hash(addr)})
+			res = Response()
+			res.set_data(json.dumps({"voter": voter, "post": post}, default=lambda o: str(o)))
+			return res, 200
 		else:
 			return "Not Found", 404
 	elif request.method == "POST":
@@ -107,11 +110,14 @@ def api_post_comment(postid):
 		else:
 			return "Not Found", 404
 	elif request.method == "GET":
-		p = get_db().db.posts.find_one_or_404({"id": postid})
-		for comment in p["comments"]:
+		post = get_db().db.posts.find_one_or_404({"id": postid})
+		addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
+		voter = get_db().db.voters.find_one({"voter", utils.get_hash(addr)})
+		for comment in post["comments"]:
 			comment["date_posted"] = comment["date_posted"].strftime(TIME_FMT)
-
-		return json.dumps({"comments": p["comments"]}), 200
+		res = Response()
+		res.set_data(json.dumps({"voter": voter, "comments": post["comments"]}, default=lambda o: str(o)))
+		return res, 200
 	else:
 		return "Bad Request", 400
 
