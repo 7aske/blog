@@ -19,6 +19,7 @@ def validate_token(token: str) -> (bool, dict):
 def validate_request(request) -> (bool, dict):
 	cookie = request.cookies.get("authorization", None)
 	if cookie:
+		cookie = cookie.replace("Bearer%20", "Bearer ")
 		parts = cookie.split(" ")
 		if len(parts) == 2 and parts[0] == "Bearer":
 			return validate_token(parts[1])

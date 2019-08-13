@@ -1,4 +1,6 @@
-from flask import request, render_template, redirect, make_response, Blueprint
+import json
+
+from flask import request, render_template, redirect, make_response, Blueprint, Response
 
 import auth
 from config import config
@@ -10,24 +12,43 @@ SECRET = config.get("admin", "secret", fallback="secret")
 login_route = Blueprint("login_route", __name__)
 
 
+@login_route.route("/validate", methods=["POST"])
+def routes_validate():
+	if auth.validate_request(request):
+		return "Ok", 200
+	else:
+		token = request.headers.get("Token")
+		if token:
+			if auth.validate_token(token):
+				return "Ok", 200
+	return "Unauthorized", 401
+
+
 @login_route.route("/login", methods=["GET", "POST"])
 def routes_login():
 	if request.method == "POST":
-		username = request.form.get('admin_username')
-		password = request.form.get('admin_passwd')
+		if request.headers.get("TOKEN_ONLY", default="false") == "true":
+			username = request.headers.get("Username")
+			password = request.headers.get("Password")
+			if username != ADMIN_USER or auth.get_hash(ADMIN_PASS) != auth.get_hash(password):
+				return "Unauthorized", 401
 
-		if username != ADMIN_USER or auth.get_hash(ADMIN_PASS) != auth.get_hash(password):
-			return render_template("login.html", errors=["Bad Credentials"])
+			token = auth.generate_token()
+			res = Response()
+			res.headers.set("Content-Type", "application/json")
+			res.set_data(json.dumps({"token": str(token, encoding="utf8")}))
+			return res
 
-		token = auth.generate_token()
-		resp = make_response(redirect("/creator"))
-		resp.set_cookie("authorization", "Bearer " + str(token, encoding="utf8"))
-		return resp
+		else:
+			username = request.form.get('admin_username')
+			password = request.form.get('admin_passwd')
+			if username != ADMIN_USER or auth.get_hash(ADMIN_PASS) != auth.get_hash(password):
+				return render_template("login.html", errors=["Bad Credentials"])
+
+			token = auth.generate_token()
+			res = make_response(redirect("/creator"))
+			res.set_cookie("authorization", "Bearer " + str(token, encoding="utf8"))
+			return res
 
 	elif request.method == "GET":
-		if auth.validate_request(request):
-			return render_template("login.html"), 400
-
 		return render_template("login.html"), 200
-	else:
-		return "Bad Request", 400
