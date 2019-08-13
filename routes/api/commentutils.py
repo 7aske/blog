@@ -2,6 +2,7 @@ from datetime import datetime
 import flask
 import json
 import shortuuid
+import threading
 from config import config
 from services.comment_mailer import CommentMailer
 
@@ -33,9 +34,14 @@ def comment_to_json(comment):
 	return comment
 
 
-def mail_commenters(post, comment):
-	recipients = set([comment["email"] for comment in post["comments"]])
-	recipients.discard(comment["email"])
-	with CommentMailer(config.get("mailer", "username"), config.get("mailer", "password")) as mailer:
-		for recipient in recipients:
-			mailer.send_mail(comment["author"], post["title"], comment["text"], post["id"], recipient)
+async def mail_commenters(post, comment):
+	def mail(post, comment):
+		recipients = set([comment["email"] for comment in post["comments"]])
+		recipients.discard(comment["email"])
+		with CommentMailer(config.get("mailer", "username"), config.get("mailer", "password")) as mailer:
+			for recipient in recipients:
+				mailer.send_mail(comment["author"], post["title"], comment["text"], post["id"], recipient)
+	thread = threading.Thread(target=mail, args=(post,comment))
+	thread.setDaemon(True)
+	thread.start()
+
