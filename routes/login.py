@@ -16,11 +16,6 @@ login_route = Blueprint("login_route", __name__)
 def routes_validate():
 	if auth.validate_request(request):
 		return "Ok", 200
-	else:
-		token = request.headers.get("Token")
-		if token:
-			if auth.validate_token(token):
-				return "Ok", 200
 	return "Unauthorized", 401
 
 

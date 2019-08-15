@@ -23,6 +23,8 @@ def api_posts():
 			if post is not None:
 				get_db().db.posts.insert(post)
 				return json.dumps(postutils.post_to_json(post)), 201
+		else:
+			return "Unauthorized", 401
 
 		return "Bad Request", 400
 	elif request.method == "GET":

@@ -23,6 +23,11 @@ def validate_request(request) -> (bool, dict):
 		parts = cookie.split(" ")
 		if len(parts) == 2 and parts[0] == "Bearer":
 			return validate_token(parts[1])
+	else:
+		token = request.headers.get("Token")
+		if token:
+			if validate_token(token):
+				return "Ok", 200
 	return False
 
 

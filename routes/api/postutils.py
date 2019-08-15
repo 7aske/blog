@@ -25,7 +25,14 @@ def request_to_post(request: flask.Request):
 	except Exception as e:
 		print(e)
 		return None
-	if "body" in post_json.keys() and "title" in post_json.keys() and "category" in post_json.keys():
+	if "body" in post_json.keys() and \
+				"title" in post_json.keys() and \
+				"category" in post_json.keys() and \
+				"description" in post_json.keys() and \
+				len(post_json["body"]) > 2 and \
+				len(post_json["title"]) > 2 and \
+				len(post_json["category"]) > 2 and \
+				len(post_json["description"]) > 2:
 		return {
 			"body"       : post_json["body"],
 			"title"      : post_json["title"],
