@@ -1,6 +1,6 @@
 db/
-static/node_modules/
-static/.idea/
+client/node_modules/
+client/
 .idea/
 venv/
 __pycache__

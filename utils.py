@@ -2,7 +2,9 @@ import socket
 import random
 import subprocess
 import sys
-from os import path, getenv
+from os import path, getenv, listdir
+from os.path import dirname
+
 from config import config
 
 
@@ -16,9 +18,23 @@ def get_random_port(prange: tuple) -> int:
 
 
 def setup_client():
-	if not path.exists("static/node_modules"):
-		npm = subprocess.Popen(["npm", "-C", path.join(path.dirname(__file__), "static"), "install"], stdout=sys.stderr)
-		npm.wait()
+	repo = "https://github.com/7aske/blog-react"
+	if getenv("FLASK_ENV") != "development":
+		if len(listdir("client")) == 0:
+			git = subprocess.Popen(["git", "-C", dirname(__file__), "clone", repo, "client"])
+			git.wait()
+		else:
+			git = subprocess.Popen(["git", "-C", path.join(path.dirname(__file__), "client"), "pull"])
+			git.wait()
+
+		if not path.exists("client/node_modules"):
+			build = subprocess.Popen(["npm", "-C", path.join(path.dirname(__file__), "client"), "install"],
+			                         stdout=sys.stderr)
+			build.wait()
+
+		build = subprocess.Popen(["npm", "-C", path.join(path.dirname(__file__), "client"), "run", "build"],
+		                         stdout=sys.stderr)
+		build.wait()
 
 
 def is_port_open(port: int) -> bool:
