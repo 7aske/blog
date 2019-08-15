@@ -86,6 +86,8 @@ def api_post(postid):
 					"$set": {"body"    : updated_post["body"], "description": updated_post["description"],
 					         "category": updated_post["category"], "title": updated_post["title"]}})
 				return json.dumps(postutils.post_to_json(updated_post)), 201
+		else:
+			return "Unauthorized", 401
 	elif request.method == "DELETE":
 		if auth.validate_request(request):
 			deleted = get_db().db.posts.delete_one({"id": postid})
@@ -93,6 +95,8 @@ def api_post(postid):
 				return json.dumps({"deleted": deleted.deleted_count}), 200
 			else:
 				return "Not Found", 404
+		else:
+			return "Unauthorized", 401
 	return "Bad Request", 400
 
 
