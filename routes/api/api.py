@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 from flask import Blueprint, request, Response
 import flask_pymongo
-import asyncio
+from twisted.conch.test.test_transport import common
 
 import auth
 import utils
@@ -126,35 +126,48 @@ def api_post_comment(postid):
 		return "Bad Request", 400
 
 
-@api_route.route("/api/v1/posts/<string:postid>/comments/<string:commentid>", methods=["POST"])
+@api_route.route("/api/v1/posts/<string:postid>/comments/<string:commentid>", methods=["POST", "DELETE"])
 def api_post_comment_vote(postid, commentid):
-	delta = request.args.get("delta")
-	addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
-	print(delta)
-	if delta is not None:
-		post = get_db().db.posts.find_one_or_404({"id": postid})
-		vote_point = int(delta)
-		print(post["comments"])
-		for comment in post["comments"]:
-			print(comment["id"], commentid)
-			if comment["id"] == commentid:
-				addr_hash = utils.get_hash(addr)
-				voter = get_db().db.voters.find_one({"voter": addr_hash})
-				if not voter:
-					voter = {"voter": addr_hash, "votes": [
-						{"id": commentid, "delta": vote_point, "date_voted": str(datetime.now())}]}
-					get_db().db.voters.insert(voter)
-					comment["votes"] += vote_point
-				else:
-					comment["votes"] += postutils.add_vote_point(voter, commentid, vote_point)
-					get_db().db.voters.update_one({"voter": addr_hash}, {"$set": {"votes": voter["votes"]}})
-
+	if request.method == "DELETE":
+		if auth.validate_request(request):
+			post = get_db().db.posts.find_one_or_404({"id": postid})
+			if post:
+				for comment in post["comments"]:
+					print(comment["id"], commentid)
+					if comment["id"] == commentid:
+						post["comments"].remove(comment)
 				get_db().db.posts.update_one({"id": postid}, {"$set": {"comments": post["comments"]}})
-				return json.dumps(commentutils.comment_to_json(comment)), 201
+				return "OK", 200
 		else:
-			return "Not Found", 404
-	else:
-		return "Bad Request", 400
+			return "Unauthorized", 401
+	elif request.method == "POST":
+		delta = request.args.get("delta")
+		addr = request.headers.get("X-Forwarded-For", default=request.remote_addr)
+		print(delta)
+		if delta is not None:
+			post = get_db().db.posts.find_one_or_404({"id": postid})
+			vote_point = int(delta)
+			print(post["comments"])
+			for comment in post["comments"]:
+				print(comment["id"], commentid)
+				if comment["id"] == commentid:
+					addr_hash = utils.get_hash(addr)
+					voter = get_db().db.voters.find_one({"voter": addr_hash})
+					if not voter:
+						voter = {"voter": addr_hash, "votes": [
+							{"id": commentid, "delta": vote_point, "date_voted": str(datetime.now())}]}
+						get_db().db.voters.insert(voter)
+						comment["votes"] += vote_point
+					else:
+						comment["votes"] += postutils.add_vote_point(voter, commentid, vote_point)
+						get_db().db.voters.update_one({"voter": addr_hash}, {"$set": {"votes": voter["votes"]}})
+
+					get_db().db.posts.update_one({"id": postid}, {"$set": {"comments": post["comments"]}})
+					return json.dumps(commentutils.comment_to_json(comment)), 201
+			else:
+				return "Not Found", 404
+		else:
+			return "Bad Request", 400
 
 
 @api_route.route("/api/v1/voters/<string:oid>", methods=["GET"])
