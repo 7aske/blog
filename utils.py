@@ -2,8 +2,8 @@ import socket
 import random
 import subprocess
 import sys
-from os import path, getenv, listdir
-from os.path import dirname
+from os import path, getenv, listdir, mkdir
+from os.path import dirname, exists
 
 from config import config
 
@@ -20,6 +20,10 @@ def get_random_port(prange: tuple) -> int:
 def setup_client():
 	repo = "https://github.com/7aske/blog-react"
 	if getenv("FLASK_ENV") != "development":
+
+		if not exists("client"):
+			mkdir("client")
+
 		if len(listdir("client")) == 0:
 			git = subprocess.Popen(["git", "-C", dirname(__file__), "clone", repo, "client"])
 			git.wait()
