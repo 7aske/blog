@@ -36,9 +36,9 @@ def setup_client():
 			                         stdout=sys.stderr)
 			build.wait()
 
-		build = subprocess.Popen(["npm", "-C", path.join(path.dirname(__file__), "client"), "run", "build"],
-		                         stdout=sys.stderr)
-		build.wait()
+			build = subprocess.Popen(["npm", "-C", path.join(path.dirname(__file__), "client"), "run", "build"],
+			                         stdout=sys.stderr)
+			build.wait()
 
 
 def is_port_open(port: int) -> bool:
